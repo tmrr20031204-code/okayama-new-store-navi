@@ -6,12 +6,14 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function Home() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let stores: any[] = [];
   let errorMessage: string | null = null;
   let clientEmail = '';
   try {
     stores = await getSheetData();
     clientEmail = await getClientEmail();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error('Failed to load data:', e);
     errorMessage = e.message || String(e);

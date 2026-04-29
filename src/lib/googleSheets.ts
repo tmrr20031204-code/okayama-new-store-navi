@@ -53,7 +53,8 @@ export async function getClientEmail(): Promise<string> {
       }
       const creds = JSON.parse(credsStr);
       return creds.client_email || 'No email found in credentials';
-    } catch(e) {
+    } catch (error) {
+      console.error('Failed to parse credentials:', error);
       return 'Error parsing credentials';
     }
   }
