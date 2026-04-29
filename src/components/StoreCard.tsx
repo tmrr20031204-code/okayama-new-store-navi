@@ -14,6 +14,7 @@ interface Store {
 }
 
 const parseDateString = (dateStr: string) => {
+  if (!dateStr) return null;
   const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
   if (match) {
     const [, y, m, d] = match;
