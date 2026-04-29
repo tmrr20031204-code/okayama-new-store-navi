@@ -7,10 +7,12 @@ export const revalidate = 0;
 
 export default async function Home() {
   let stores: any[] = [];
+  let errorMessage: string | null = null;
   try {
     stores = await getSheetData();
-  } catch (e) {
+  } catch (e: any) {
     console.error('Failed to load data:', e);
+    errorMessage = e.message || String(e);
   }
 
   // 「店名」などのヘッダー行や空行を除外
@@ -23,7 +25,11 @@ export default async function Home() {
       </header>
 
       <main className="main-content">
-        {validStores.length === 0 ? (
+        {errorMessage ? (
+           <div className="empty-state">
+             <p style={{color: 'red'}}>エラーが発生しました: {errorMessage}</p>
+           </div>
+        ) : validStores.length === 0 ? (
           <div className="empty-state">
             <p>データが見つかりません。</p>
             <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', opacity: 0.7 }}>
