@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 export async function updateStoreStatus(rowIndex: number, newStatus: string) {
   try {
     const auth = await getAuthClient();
+    if (!auth) throw new Error('Google Auth Client is null');
     const sheets = google.sheets({ version: 'v4', auth });
     const spreadsheetId = await getSpreadsheetId();
 

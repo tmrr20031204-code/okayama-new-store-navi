@@ -43,6 +43,7 @@ export async function getAuthClient() {
 
 export async function getSpreadsheetId() {
   const auth = await getAuthClient();
+  if (!auth) throw new Error('Google Auth Client is null');
   const drive = google.drive({ version: 'v3', auth });
   
   const res = await drive.files.list({
@@ -58,6 +59,7 @@ export async function getSpreadsheetId() {
 
 export async function getSheetData() {
   const auth = await getAuthClient();
+  if (!auth) throw new Error('Google Auth Client is null');
   const sheets = google.sheets({ version: 'v4', auth });
   const spreadsheetId = await getSpreadsheetId();
   
