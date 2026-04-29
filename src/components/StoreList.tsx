@@ -20,6 +20,7 @@ interface StoreListProps {
 export default function StoreList({ stores }: StoreListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const extractCity = (address: string) => {
     const match = address.match(/(?:.+?[都道府県])?(.+?[市区町村])/);
@@ -37,14 +38,25 @@ export default function StoreList({ stores }: StoreListProps) {
     return Array.from(citySet).sort();
   }, [stores]);
 
+  const categories = useMemo(() => {
+    const categorySet = new Set<string>();
+    stores.forEach(store => {
+      if (store.category && store.category !== 'その他') {
+        categorySet.add(store.category);
+      }
+    });
+    return Array.from(categorySet).sort();
+  }, [stores]);
+
   const filteredStores = useMemo(() => {
     return stores.filter(store => {
       const matchesSearch = store.store_name.toLowerCase().includes(searchQuery.toLowerCase());
       const storeCity = extractCity(store.address);
       const matchesArea = selectedArea === '' || storeCity === selectedArea;
-      return matchesSearch && matchesArea;
+      const matchesCategory = selectedCategory === '' || store.category === selectedCategory;
+      return matchesSearch && matchesArea && matchesCategory;
     });
-  }, [stores, searchQuery, selectedArea]);
+  }, [stores, searchQuery, selectedArea, selectedCategory]);
 
   return (
     <>
@@ -67,6 +79,18 @@ export default function StoreList({ stores }: StoreListProps) {
             <option value="">すべてのエリア</option>
             {areas.map(area => (
               <option key={area} value={area}>{area}</option>
+            ))}
+          </select>
+        </div>
+        <div className="category-filter">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="area-select"
+          >
+            <option value="">すべての業態</option>
+            {categories.map(category => (
+              <option key={category} value={category}>{category}</option>
             ))}
           </select>
         </div>

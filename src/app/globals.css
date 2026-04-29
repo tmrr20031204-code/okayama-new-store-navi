@@ -235,13 +235,14 @@ body {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .search-box {
-  flex: 2;
+  flex: 1 1 100%;
 }
 
-.area-filter {
+.area-filter, .category-filter {
   flex: 1;
 }
 

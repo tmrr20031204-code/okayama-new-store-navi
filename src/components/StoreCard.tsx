@@ -44,12 +44,6 @@ export default function StoreCard({ store }: { store: Store }) {
 
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.store_name + ' ' + store.address)}`;
 
-  const getDemandBadge = (demand: string) => {
-    if (demand === '高') return <span className="badge demand-high">🥩 需要: 高</span>;
-    if (demand === '中') return <span className="badge demand-mid">🍖 需要: 中</span>;
-    return <span className="badge demand-low">☕ 需要: 低</span>;
-  };
-
   const isVisited = store.status === '訪問済み';
   const openStatus = getOpenStatus(store.open_date);
 
@@ -63,7 +57,6 @@ export default function StoreCard({ store }: { store: Store }) {
             {openStatus === 'soon' && <span className="badge status-soon">⏳ 開店準備中</span>}
           </div>
         </div>
-        {getDemandBadge(store.meat_demand)}
       </div>
       
       <div className="info-grid">
