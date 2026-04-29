@@ -1,4 +1,4 @@
-import { getSheetData } from '@/lib/googleSheets';
+import { getSheetData, getClientEmail } from '@/lib/googleSheets';
 import StoreCard from '@/components/StoreCard';
 
 // キャッシュを無効化し、常に最新のスプレッドシートデータを取得する
@@ -8,8 +8,10 @@ export const revalidate = 0;
 export default async function Home() {
   let stores: any[] = [];
   let errorMessage: string | null = null;
+  let clientEmail = '';
   try {
     stores = await getSheetData();
+    clientEmail = await getClientEmail();
   } catch (e: any) {
     console.error('Failed to load data:', e);
     errorMessage = e.message || String(e);
@@ -33,7 +35,8 @@ export default async function Home() {
           <div className="empty-state">
             <p>データが見つかりません。</p>
             <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', opacity: 0.7 }}>
-              Pythonスクリプトを実行してスプレッドシートにデータを追加してください。
+              Pythonスクリプトを実行してスプレッドシートにデータを追加してください。<br/>
+              (Service Account: {clientEmail})
             </p>
           </div>
         ) : (

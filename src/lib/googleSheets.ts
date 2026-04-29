@@ -41,6 +41,25 @@ export async function getAuthClient() {
   });
 }
 
+export async function getClientEmail(): Promise<string> {
+  if (process.env.GOOGLE_CREDENTIALS) {
+    try {
+      let credsStr = process.env.GOOGLE_CREDENTIALS;
+      if (!credsStr.trim().startsWith('{') && !credsStr.trim().startsWith('"')) {
+        credsStr = Buffer.from(credsStr, 'base64').toString('utf-8');
+      } else {
+        credsStr = credsStr.replace(/\r?\n/g, '\\n');
+        credsStr = credsStr.replace(/\\\\n/g, '\\n');
+      }
+      const creds = JSON.parse(credsStr);
+      return creds.client_email || 'No email found in credentials';
+    } catch(e) {
+      return 'Error parsing credentials';
+    }
+  }
+  return 'Using local credentials.json';
+}
+
 export async function getSpreadsheetId() {
   const auth = await getAuthClient();
   if (!auth) throw new Error('Google Auth Client is null');
