@@ -4,13 +4,24 @@ import path from 'path';
 export async function getAuthClient() {
   if (process.env.GOOGLE_CREDENTIALS) {
     let credsStr = process.env.GOOGLE_CREDENTIALS;
-    // Vercel等で改行が実体化してしまった場合のための安全処理
-    // 実際の改行をエスケープされた \n に置換し、さらに制御文字を取り除く
-    credsStr = credsStr.replace(/\r?\n/g, '\\n');
-    // すでに \\n になっている部分が \\\\n になるのを防ぐ
-    credsStr = credsStr.replace(/\\\\n/g, '\\n');
+    let credentials;
     
-    const credentials = JSON.parse(credsStr);
+    try {
+      // もし '{' や '"' で始まっていない場合はBase64エンコードされているとみなしてデコード
+      if (!credsStr.trim().startsWith('{') && !credsStr.trim().startsWith('"')) {
+        credsStr = Buffer.from(credsStr, 'base64').toString('utf-8');
+      } else {
+        // 従来の処理のフォールバック (改行補正など)
+        credsStr = credsStr.replace(/\r?\n/g, '\\n');
+        credsStr = credsStr.replace(/\\\\n/g, '\\n');
+      }
+      
+      credentials = JSON.parse(credsStr);
+    } catch (e) {
+      console.error('Failed to parse GOOGLE_CREDENTIALS:', e);
+      return null;
+    }
+
     return new google.auth.GoogleAuth({
       credentials,
       scopes: [
