@@ -13,6 +13,24 @@ interface Store {
   status: string;
 }
 
+const parseDateString = (dateStr: string) => {
+  const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (match) {
+    const [, y, m, d] = match;
+    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+  }
+  return null;
+};
+
+const getOpenStatus = (openDateStr: string) => {
+  const openDate = parseDateString(openDateStr);
+  if (!openDate) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  openDate.setHours(0, 0, 0, 0);
+  return openDate <= today ? 'open' : 'soon';
+};
+
 export default function StoreCard({ store }: { store: Store }) {
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -32,11 +50,18 @@ export default function StoreCard({ store }: { store: Store }) {
   };
 
   const isVisited = store.status === '訪問済み';
+  const openStatus = getOpenStatus(store.open_date);
 
   return (
-    <div className="card">
+    <div className={`card ${openStatus === 'open' ? 'card-open' : 'card-soon'}`}>
       <div className="card-header">
-        <h2 className="store-name">{store.store_name}</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <h2 className="store-name">{store.store_name}</h2>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {openStatus === 'open' && <span className="badge status-open">🎈 オープン済</span>}
+            {openStatus === 'soon' && <span className="badge status-soon">⏳ 開店準備中</span>}
+          </div>
+        </div>
         {getDemandBadge(store.meat_demand)}
       </div>
       

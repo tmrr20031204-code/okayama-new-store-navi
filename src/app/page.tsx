@@ -1,5 +1,5 @@
 import { getSheetData, getClientEmail } from '@/lib/googleSheets';
-import StoreCard from '@/components/StoreCard';
+import StoreList from '@/components/StoreList';
 
 // キャッシュを無効化し、常に最新のスプレッドシートデータを取得する
 export const dynamic = 'force-dynamic';
@@ -42,9 +42,7 @@ export default async function Home() {
             </p>
           </div>
         ) : (
-          validStores.map((store) => (
-            <StoreCard key={store.rowIndex} store={store} />
-          ))
+          <StoreList stores={validStores} />
         )}
       </main>
     </div>
