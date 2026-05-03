@@ -151,7 +151,8 @@ export default function StoreList({ stores }: StoreListProps) {
             className="search-input"
           />
         </div>
-        <div className="area-filter">
+        <div className="area-filter" style={{ minWidth: '140px' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginBottom: '0.3rem', fontWeight: 600 }}>📍 都道府県</label>
           <select
             value={selectedPrefecture}
             onChange={handlePrefectureChange}
@@ -163,7 +164,8 @@ export default function StoreList({ stores }: StoreListProps) {
             ))}
           </select>
         </div>
-        <div className="area-filter">
+        <div className="area-filter" style={{ minWidth: '140px' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginBottom: '0.3rem', fontWeight: 600 }}>🏘️ 市区町村</label>
           <select
             value={selectedCity}
             onChange={handleCityChange}
@@ -176,7 +178,8 @@ export default function StoreList({ stores }: StoreListProps) {
             ))}
           </select>
         </div>
-        <div className="category-filter">
+        <div className="category-filter" style={{ minWidth: '140px' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginBottom: '0.3rem', fontWeight: 600 }}>🏷️ 業態</label>
           <select
             value={selectedCategory}
             onChange={handleCategoryChange}
@@ -188,14 +191,15 @@ export default function StoreList({ stores }: StoreListProps) {
             ))}
           </select>
         </div>
-        <div className="sort-filter">
+        <div className="sort-filter" style={{ flex: 1, minWidth: '140px' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginBottom: '0.3rem', fontWeight: 600 }}>↕️ 並び替え</label>
           <select
             value={sortOrder}
             onChange={handleSortChange}
             className="area-select"
           >
-            <option value="desc">オープン日が新しい順 (降順)</option>
-            <option value="asc">オープン日が古い順 (昇順)</option>
+            <option value="desc">オープン日が新しい順</option>
+            <option value="asc">オープン日が古い順</option>
           </select>
         </div>
       </div>
