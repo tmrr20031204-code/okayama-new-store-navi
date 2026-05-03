@@ -120,7 +120,7 @@ export default function StoreCard({ store }: { store: Store }) {
       </div>
 
       <div className="card-actions">
-        <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="btn btn-map">
+        <a href={mapUrl} className="btn btn-map">
           🗺️ マップ
         </a>
         <button 

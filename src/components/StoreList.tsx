@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import StoreCard from './StoreCard';
 
 interface Store {
@@ -39,6 +39,31 @@ export default function StoreList({ stores }: StoreListProps) {
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('storeListState');
+      if (saved) {
+        try {
+          const state = JSON.parse(saved);
+          if (state.searchQuery) setSearchQuery(state.searchQuery);
+          if (state.selectedPrefecture) setSelectedPrefecture(state.selectedPrefecture);
+          if (state.selectedCity) setSelectedCity(state.selectedCity);
+          if (state.selectedCategory) setSelectedCategory(state.selectedCategory);
+          if (state.sortOrder) setSortOrder(state.sortOrder);
+          if (state.currentPage) setCurrentPage(state.currentPage);
+        } catch(e){}
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('storeListState', JSON.stringify({
+        searchQuery, selectedPrefecture, selectedCity, selectedCategory, sortOrder, currentPage
+      }));
+    }
+  }, [searchQuery, selectedPrefecture, selectedCity, selectedCategory, sortOrder, currentPage]);
 
   const extractPrefecture = (address: string) => {
     if (address.includes('広島')) return '広島県';
