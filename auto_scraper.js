@@ -80,9 +80,12 @@ ${titles.join('\n')}
 
 async function main() {
     console.log("Fetching news...");
-    const titlesOk = await fetchNews("岡山 新店舗 オープン 飲食店");
-    const titlesHi = await fetchNews("広島 新店舗 オープン 飲食店");
-    const allTitles = [...new Set([...titlesOk, ...titlesHi])]; // Deduplicate
+    const titlesOk1 = await fetchNews("岡山 新店舗 オープン 飲食店");
+    const titlesOk2 = await fetchNews("岡山 新店 オープン");
+    const titlesHi1 = await fetchNews("広島 新店舗 オープン 飲食店");
+    const titlesHi2 = await fetchNews("広島 新店 オープン");
+    const titlesHi3 = await fetchNews("広島 飲食店 オープン プレオープン");
+    const allTitles = [...new Set([...titlesOk1, ...titlesOk2, ...titlesHi1, ...titlesHi2, ...titlesHi3])]; // Deduplicate
     
     if (allTitles.length === 0) {
         console.log("No news found.");
