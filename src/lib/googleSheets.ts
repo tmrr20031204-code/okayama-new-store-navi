@@ -101,3 +101,27 @@ export async function getSheetData() {
     status: row[5] || '未訪問',
   }));
 }
+
+export async function getLastUpdated(): Promise<string | null> {
+  try {
+    const auth = await getAuthClient();
+    if (!auth) return null;
+    const drive = google.drive({ version: 'v3', auth });
+    
+    const res = await drive.files.list({
+      q: "name='新規オープン店リスト' and mimeType='application/vnd.google-apps.spreadsheet'",
+      fields: 'files(id, modifiedTime)',
+    });
+    
+    if (res.data.files && res.data.files.length > 0) {
+      const time = res.data.files[0].modifiedTime;
+      if (!time) return null;
+      const d = new Date(time);
+      const jstDate = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+      return `${jstDate.getFullYear()}年${jstDate.getMonth() + 1}月${jstDate.getDate()}日 ${jstDate.getHours()}時更新`;
+    }
+  } catch (error) {
+    console.error('Failed to get last updated time:', error);
+  }
+  return null;
+}
