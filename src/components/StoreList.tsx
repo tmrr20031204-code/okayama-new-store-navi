@@ -19,6 +19,7 @@ interface Store {
 
 interface StoreListProps {
   stores: Store[];
+  lastUpdated?: string;
 }
 
 const parseDateString = (dateStr: string) => {
@@ -31,13 +32,15 @@ const parseDateString = (dateStr: string) => {
   return null;
 };
 
-export default function StoreList({ stores }: StoreListProps) {
+export default function StoreList({ stores, lastUpdated }: StoreListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPrefecture, setSelectedPrefecture] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const itemsPerPage = 30;
 
   useEffect(() => {
@@ -141,7 +144,7 @@ export default function StoreList({ stores }: StoreListProps) {
       
       return matchesSearch && matchesPrefecture && matchesCity && matchesCategory;
     });
-  }, [stores, searchQuery, selectedPrefecture, selectedCity, selectedCategory]);
+  }, [validStores, searchQuery, selectedPrefecture, selectedCity, selectedCategory]);
 
   const sortedStores = useMemo(() => {
     return [...filteredStores].sort((a, b) => {
@@ -190,7 +193,22 @@ export default function StoreList({ stores }: StoreListProps) {
 
   return (
     <>
-      <div className="filters-container">
+      <header className="header" style={{ position: 'fixed', top: 0, left: 0, right: 0, width: '100%' }}>
+        <button className="menu-trigger" onClick={() => setIsMenuOpen(true)}>
+          ☰
+        </button>
+        <div className="header-content">
+          <h1>新店オープンナビ</h1>
+          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', opacity: 0.9 }}>
+            <span>～岡山・広島版～</span>
+            {lastUpdated && <span>{lastUpdated}</span>}
+          </div>
+        </div>
+      </header>
+
+      <div style={{ height: '80px' }}></div>
+
+      <div className="filters-container" style={{ padding: '0 1rem', marginBottom: '1.5rem' }}>
         <div className="search-box">
           <input
             type="text"
@@ -252,6 +270,136 @@ export default function StoreList({ stores }: StoreListProps) {
           </select>
         </div>
       </div>
+
+      <div className={`sidebar-overlay ${isMenuOpen ? 'open' : ''}`} onClick={() => setIsMenuOpen(false)}></div>
+      <aside className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <span className="sidebar-title">メニュー</span>
+          <button className="close-menu" onClick={() => setIsMenuOpen(false)}>✕</button>
+        </div>
+        
+        <div className="sidebar-content">
+          <div className="filter-group">
+            <label className="filter-label">🔍 店名検索</label>
+            <input
+              type="text"
+              placeholder="店舗名で検索..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">📍 都道府県</label>
+            <select
+              value={selectedPrefecture}
+              onChange={handlePrefectureChange}
+              className="area-select"
+            >
+              <option value="">すべての県</option>
+              {prefectures.map(pref => (
+                <option key={pref} value={pref}>{pref}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">🏘️ 市区町村</label>
+            <select
+              value={selectedCity}
+              onChange={handleCityChange}
+              className="area-select"
+              disabled={!selectedPrefecture && prefectures.length > 0}
+            >
+              <option value="">すべての市区町村</option>
+              {cities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">🏷️ 業態</label>
+            <select
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="area-select"
+            >
+              <option value="">すべての業態</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">↕️ 並び替え</label>
+            <select
+              value={sortOrder}
+              onChange={handleSortChange}
+              className="area-select"
+            >
+              <option value="desc">オープン日が新しい順</option>
+              <option value="asc">オープン日が古い順</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="sidebar-footer">
+          <button className="about-trigger" onClick={() => { setIsAboutOpen(true); setIsMenuOpen(false); }}>
+            📄 新店オープンナビについて
+          </button>
+        </div>
+      </aside>
+
+      <div className={`about-modal ${isAboutOpen ? 'open' : ''}`}>
+        <button className="about-close" onClick={() => setIsAboutOpen(false)}>閉じる</button>
+        <div className="about-content">
+          <h2>新店オープンナビについて</h2>
+          <p style={{ fontWeight: 'bold', color: 'var(--primary)' }}>
+            本アプリは当社社員専用の共有ツールです。<br/>
+            セキュリティ保護のため、社外への共有や情報の漏洩は厳禁といたします。
+          </p>
+
+          <h3>🥩 新店オープンナビの概要</h3>
+          <p>
+            「新店オープンナビ」は、営業チームが「お肉の仕入れニーズが高い新規オープン店舗」をいち早く発見し、効率的に営業活動（アプローチ）を行うための専用Webアプリです。
+          </p>
+          <p>
+            外出先からでもスマートフォンで最新のターゲットリストを即座に確認でき、営業の機動力と新規開拓スピードを最大化することを目的としています。
+          </p>
+
+          <h3>⚙️ システムの仕組み（データの流れ）</h3>
+          <p>システムは大きく分けて「①自動収集（AI）」「②データ保管」「③アプリ表示」の3ステップで稼働しています。</p>
+          
+          <div style={{ marginLeft: '1rem', borderLeft: '3px solid #eee', paddingLeft: '1rem' }}>
+            <p><strong>① インターネットからの自動収集とAIによる厳選</strong><br/>
+            システムが定期的に求人サイトや新店情報サイトを巡回。AI（人工知能）が「岡山・広島エリア」かつ「前後12ヶ月以内にオープン」の店舗を自動抽出します。</p>
+            <p><small>【ここがポイント！】 AIによる高度なフィルタリングを行い、カフェやスイーツ店などの非ターゲットを除外。代わりに「焼肉」「ホルモン」「ステーキ」「ラーメン」「和牛」など、お肉関連の重要キーワードを含む店舗を「最優先の見込み客」として選別します。</small></p>
+            
+            <p><strong>② スプレッドシートへの自動記録</strong><br/>
+            AIが厳選した情報は、リアルタイムでGoogleスプレッドシート（新規オープン店リスト）に集約・保管されます。</p>
+            
+            <p><strong>③ スマートフォンでの閲覧</strong><br/>
+            スプレッドシートの情報は即座に本アプリへ反映されます。営業担当者は「今から訪問可能な近隣の新店舗」をいつでもどこでも確認可能です。</p>
+          </div>
+
+          <h3>💡 特徴とメリット</h3>
+          <ul>
+            <li><strong>ノイズのない「特化型」リスト：</strong>肉の需要が高い業態に絞り込まれているため、リサーチの手間を大幅に削減。</li>
+            <li><strong>リアルタイムな情報共有：</strong>スプレッドシートの更新が即座に反映され、チーム内での訪問状況管理やバッティング防止に貢献。</li>
+          </ul>
+
+          <p style={{ marginTop: '2rem', padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+            <strong>一言でまとめると：</strong><br/>
+            「AIがネット上の新店情報を24時間監視し、お肉の需要が高い店舗だけを厳選してスプレッドシートに整理。それを営業マンがスマホで即座に確認できるシステム」です。
+          </p>
+          
+          <p style={{ marginTop: '1rem' }}>当社の強みである「肉の専門性」を活かしたスピーディなアプローチを強力にバックアップします！</p>
+        </div>
+      </div>
+
       <div className="store-list">
         {paginatedStores.length === 0 ? (
           <div className="empty-state">

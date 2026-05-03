@@ -43,12 +43,35 @@ body {
   background: linear-gradient(135deg, rgba(225, 29, 72, 0.95), rgba(159, 18, 57, 0.95));
   backdrop-filter: blur(10px);
   color: white;
-  padding: 1.5rem 1rem;
+  padding: 1rem;
   text-align: center;
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
   box-shadow: 0 4px 20px rgba(225, 29, 72, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-trigger {
+  position: absolute;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
 }
 
 .header h1 {
@@ -292,25 +315,178 @@ body {
   opacity: 1;
 }
 
-/* Modal Styles */
-.modal-overlay {
+/* Sidebar Styles */
+.sidebar-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
 }
 
-.modal-content {
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
   background: white;
-  border-radius: 16px;
+  z-index: 201;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
   padding: 1.5rem;
-  width: 100%;
-  max-width: 400px;
-  max-height: 90vh;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.close-menu {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.sidebar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.about-trigger {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.75rem;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.about-trigger:hover {
+  background: var(--demand-high);
+}
+
+/* About Section Modal */
+.about-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 300;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  display: none;
+}
+
+.about-modal.open {
+  display: block;
+}
+
+.about-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 0.5rem;
+}
+
+.about-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.about-content p {
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}
+
+.about-content ul {
+  margin-bottom: 1rem;
+  padding-left: 1.25rem;
+}
+
+.about-content li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.about-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
 }
