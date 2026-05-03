@@ -305,6 +305,12 @@ body {
   color: #c2410c;
 }
 
+.status-new {
+  background: #ff4757;
+  color: white;
+  box-shadow: none;
+}
+
 .card-open::before {
   background: #0ea5e9;
   opacity: 1;

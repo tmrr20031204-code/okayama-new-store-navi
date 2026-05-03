@@ -4,6 +4,7 @@ import StoreList from '@/components/StoreList';
 // キャッシュを無効化し、常に最新のスプレッドシートデータを取得する
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export default async function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

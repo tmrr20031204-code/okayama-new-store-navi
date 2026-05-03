@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import StoreCard from './StoreCard';
 
 interface Store {
@@ -22,17 +23,11 @@ interface StoreListProps {
   lastUpdated?: string;
 }
 
-const parseDateString = (dateStr: string) => {
-  if (!dateStr) return null;
-  const match = dateStr.match(/(\d{4})年(\d{1,2})月(?:(\d{1,2})日)?/);
-  if (match) {
-    const [, y, m, d] = match;
-    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, d ? parseInt(d, 10) : 1);
-  }
-  return null;
-};
+import { parseDateString } from '@/lib/dateUtils';
 
 export default function StoreList({ stores, lastUpdated }: StoreListProps) {
+  const router = useRouter();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPrefecture, setSelectedPrefecture] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -42,6 +37,12 @@ export default function StoreList({ stores, lastUpdated }: StoreListProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const itemsPerPage = 30;
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    router.refresh();
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -204,6 +205,23 @@ export default function StoreList({ stores, lastUpdated }: StoreListProps) {
             {lastUpdated && <span>{lastUpdated}</span>}
           </div>
         </div>
+        <button 
+          className="refresh-trigger" 
+          onClick={handleRefresh} 
+          disabled={isRefreshing}
+          style={{ 
+            position: 'absolute', 
+            right: '1rem', 
+            background: 'none', 
+            border: 'none', 
+            color: 'white', 
+            fontSize: '1.25rem', 
+            cursor: 'pointer',
+            opacity: isRefreshing ? 0.5 : 1
+          }}
+        >
+          {isRefreshing ? '⌛' : '🔄'}
+        </button>
       </header>
 
       <div style={{ height: '80px' }}></div>
@@ -361,6 +379,12 @@ export default function StoreList({ stores, lastUpdated }: StoreListProps) {
             本アプリは当社社員専用の共有ツールです。<br/>
             セキュリティ保護のため、社外への共有や情報の漏洩は厳禁といたします。
           </p>
+
+          <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.8rem', color: '#64748b', border: '1px solid #e2e8f0' }}>
+            <strong>システム稼働状況:</strong><br/>
+            ロジック更新日時: 2026/05/03 22:05 (v1.2.5)<br/>
+            アプリ上の今日の日付: {new Date().toLocaleDateString('ja-JP')}
+          </div>
 
           <h3>🥩 新店オープンナビの概要</h3>
           <p>
