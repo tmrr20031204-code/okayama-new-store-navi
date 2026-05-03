@@ -11,6 +11,10 @@ interface Store {
   category: string;
   meat_demand: string;
   status: string;
+  visitor_name?: string;
+  contact_person?: string;
+  contact_info?: string;
+  notes?: string;
 }
 
 interface StoreListProps {

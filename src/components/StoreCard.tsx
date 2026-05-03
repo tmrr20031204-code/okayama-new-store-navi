@@ -11,6 +11,10 @@ interface Store {
   category: string;
   meat_demand: string;
   status: string;
+  visitor_name?: string;
+  contact_person?: string;
+  contact_info?: string;
+  notes?: string;
 }
 
 const parseDateString = (dateStr: string) => {
@@ -45,12 +49,31 @@ const getIsNew = (openDateStr: string) => {
 
 export default function StoreCard({ store }: { store: Store }) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    visitorName: store.visitor_name || '',
+    contactPerson: store.contact_person || '',
+    contactInfo: store.contact_info || '',
+    notes: store.notes || ''
+  });
 
   const handleStatusToggle = async () => {
+    if (store.status === '未訪問') {
+      setShowModal(true);
+      return;
+    }
+    // 訪問済みから未訪問へ戻す場合
     setIsUpdating(true);
-    const newStatus = store.status === '未訪問' ? '訪問済み' : '未訪問';
-    await updateStoreStatus(store.rowIndex, newStatus);
+    await updateStoreStatus(store.rowIndex, '未訪問');
     setIsUpdating(false);
+  };
+
+  const handleModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    await updateStoreStatus(store.rowIndex, '訪問済み', formData);
+    setIsUpdating(false);
+    setShowModal(false);
   };
 
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.store_name + ' ' + store.address)}`;
@@ -85,6 +108,15 @@ export default function StoreCard({ store }: { store: Store }) {
           <span className="info-icon">🏷️</span>
           <span>業態: {store.category}</span>
         </div>
+        {isVisited && (
+          <div className="visit-details" style={{ marginTop: '0.5rem', padding: '0.75rem', backgroundColor: '#f0fdf4', borderRadius: '8px', fontSize: '0.875rem' }}>
+            <div style={{ fontWeight: 'bold', color: '#166534', marginBottom: '0.25rem' }}>✓ 訪問記録</div>
+            {store.visitor_name && <div><span style={{ color: '#15803d' }}>当社担当:</span> {store.visitor_name}</div>}
+            {store.contact_person && <div><span style={{ color: '#15803d' }}>先方担当:</span> {store.contact_person}</div>}
+            {store.contact_info && <div><span style={{ color: '#15803d' }}>連絡先:</span> {store.contact_info}</div>}
+            {store.notes && <div style={{ marginTop: '0.25rem' }}><span style={{ color: '#15803d' }}>備考:</span> {store.notes}</div>}
+          </div>
+        )}
       </div>
 
       <div className="card-actions">
@@ -105,6 +137,36 @@ export default function StoreCard({ store }: { store: Store }) {
           )}
         </button>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '1.25rem', fontSize: '1.125rem', fontWeight: 'bold' }}>訪問記録の入力</h3>
+            <form onSubmit={handleModalSubmit}>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>当社訪問者氏名</label>
+                <input required type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.visitorName} onChange={e => setFormData({...formData, visitorName: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>訪問先担当者氏名</label>
+                <input type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>訪問店舗の連絡先</label>
+                <input type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.contactInfo} onChange={e => setFormData({...formData, contactInfo: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>備考</label>
+                <textarea className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc', minHeight: '80px' }} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button type="button" className="btn" style={{ flex: 1, backgroundColor: '#eee', color: '#333' }} onClick={() => setShowModal(false)}>キャンセル</button>
+                <button type="submit" className="btn" style={{ flex: 1, backgroundColor: '#10b981', color: 'white' }}>登録して訪問済みにする</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

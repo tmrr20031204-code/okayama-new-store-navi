@@ -87,7 +87,7 @@ export async function getSheetData() {
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: 'A:F', 
+    range: 'A:J', 
   });
 
   const rows = response.data.values || [];
@@ -99,6 +99,10 @@ export async function getSheetData() {
     category: row[3] || '',
     meat_demand: row[4] || '',
     status: row[5] || '未訪問',
+    visitor_name: row[6] || '',
+    contact_person: row[7] || '',
+    contact_info: row[8] || '',
+    notes: row[9] || '',
   }));
 }
 
