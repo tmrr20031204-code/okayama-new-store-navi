@@ -30,7 +30,7 @@ export default async function Home() {
         <h1>新店オープンナビ</h1>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '0.5rem', flexWrap: 'wrap' }}>
           <p style={{ margin: 0, fontWeight: 'bold' }}>～岡山・広島版～</p>
-          {lastUpdated && <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{lastUpdated}</p>}
+          {lastUpdated && <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)' }}>{lastUpdated}</p>}
         </div>
       </header>
 

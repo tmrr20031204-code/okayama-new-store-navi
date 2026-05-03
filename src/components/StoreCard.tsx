@@ -79,7 +79,7 @@ export default function StoreCard({ store }: { store: Store }) {
         </div>
         <div className="info-row">
           <span className="info-icon">📅</span>
-          <span>オープン予定: {store.open_date}</span>
+          <span>{openStatus === 'open' ? 'オープン日' : 'オープン予定'}: {store.open_date}</span>
         </div>
         <div className="info-row">
           <span className="info-icon">🏷️</span>
