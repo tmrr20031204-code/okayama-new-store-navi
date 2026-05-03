@@ -3,7 +3,7 @@ const path = require('path');
 
 const CREDENTIALS_FILE = '../credentials.json';
 const SPREADSHEET_NAME = '新規オープン店リスト';
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 async function fetchNews(query) {
     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ja&gl=JP&ceid=JP:ja`;
@@ -14,8 +14,8 @@ async function fetchNews(query) {
 }
 
 async function extractStores(titles) {
-    if (!OPENAI_API_KEY) {
-        console.warn("No OPENAI_API_KEY, returning empty");
+    if (!GEMINI_API_KEY) {
+        console.warn("No GEMINI_API_KEY, returning empty");
         return [];
     }
     const current_date = new Date().toLocaleDateString('ja-JP');
@@ -47,30 +47,29 @@ async function extractStores(titles) {
 ${titles.join('\n')}
 `;
 
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${OPENAI_API_KEY}`
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: "あなたはデータ抽出アシスタントです。JSON配列のみを出力します。" },
-                { role: "user", content: prompt }
-            ],
-            temperature: 0.0
+            contents: [{
+                parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+                temperature: 0.0
+            }
         })
     });
     
     if (!res.ok) {
-        console.error("OpenAI API error:", await res.text());
+        console.error("Gemini API error:", await res.text());
         return [];
     }
     
     const data = await res.json();
-    let content = data.choices[0].message.content.trim();
-    content = content.replace(/```json\n?|\n?```/g, '');
+    let content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    content = content.trim().replace(/```json\n?|\n?```/g, '');
     try {
         return JSON.parse(content);
     } catch (e) {
