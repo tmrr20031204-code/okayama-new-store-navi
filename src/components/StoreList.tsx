@@ -23,12 +23,12 @@ interface StoreListProps {
 
 const parseDateString = (dateStr: string) => {
   if (!dateStr) return null;
-  const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  const match = dateStr.match(/(\d{4})年(\d{1,2})月(?:(\d{1,2})日)?/);
   if (match) {
     const [, y, m, d] = match;
-    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10)).getTime();
+    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, d ? parseInt(d, 10) : 1);
   }
-  return 0;
+  return null;
 };
 
 export default function StoreList({ stores }: StoreListProps) {
@@ -84,8 +84,28 @@ export default function StoreList({ stores }: StoreListProps) {
     return Array.from(categorySet).sort();
   }, [stores]);
 
-  const filteredStores = useMemo(() => {
+  const validStores = useMemo(() => {
     return stores.filter(store => {
+      const openDate = parseDateString(store.open_date);
+      if (!openDate) return true; // 日付不明は残す
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      openDate.setHours(0, 0, 0, 0);
+      
+      const diffTime = today.getTime() - openDate.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      
+      // オープン前180日以上先、またはオープン後365日以上経過した店舗は除外
+      if (diffDays > 365 || diffDays < -180) {
+        return false;
+      }
+      return true;
+    });
+  }, [stores]);
+
+  const filteredStores = useMemo(() => {
+    return validStores.filter(store => {
       const matchesSearch = store.store_name.toLowerCase().includes(searchQuery.toLowerCase());
       const pref = extractPrefecture(store.address);
       const city = extractCity(store.address);
@@ -100,8 +120,8 @@ export default function StoreList({ stores }: StoreListProps) {
 
   const sortedStores = useMemo(() => {
     return [...filteredStores].sort((a, b) => {
-      const timeA = parseDateString(a.open_date) || 0;
-      const timeB = parseDateString(b.open_date) || 0;
+      const timeA = parseDateString(a.open_date)?.getTime() || 0;
+      const timeB = parseDateString(b.open_date)?.getTime() || 0;
       if (sortOrder === 'desc') {
         return timeB - timeA;
       } else {

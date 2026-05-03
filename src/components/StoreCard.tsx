@@ -19,10 +19,10 @@ interface Store {
 
 const parseDateString = (dateStr: string) => {
   if (!dateStr) return null;
-  const match = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  const match = dateStr.match(/(\d{4})年(\d{1,2})月(?:(\d{1,2})日)?/);
   if (match) {
     const [, y, m, d] = match;
-    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, d ? parseInt(d, 10) : 1);
   }
   return null;
 };

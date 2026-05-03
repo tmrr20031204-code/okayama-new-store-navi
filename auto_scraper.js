@@ -136,9 +136,60 @@ async function main() {
     // Fetch existing stores to avoid duplicates
     const sheetData = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: 'A:A'
+        range: 'A:C'
     });
-    const existingStoreNames = (sheetData.data.values || []).flat();
+    const existingStoreNames = (sheetData.data.values || []).map(row => row[0]).filter(Boolean);
+    
+    // Delete stores older than 365 days
+    const rows = sheetData.data.values || [];
+    const parseDateString = (dateStr) => {
+        if (!dateStr) return null;
+        const match = dateStr.match(/(\d{4})年(\d{1,2})月(?:(\d{1,2})日)?/);
+        if (match) {
+            const [, y, m, d] = match;
+            return new Date(parseInt(y, 10), parseInt(m, 10) - 1, d ? parseInt(d, 10) : 1);
+        }
+        return null;
+    };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const rowsToDelete = [];
+    
+    // Skip header row
+    for (let i = 1; i < rows.length; i++) {
+        const parsedDate = parseDateString(rows[i][2]);
+        if (parsedDate) {
+            parsedDate.setHours(0, 0, 0, 0);
+            const diffDays = (today.getTime() - parsedDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diffDays > 365) rowsToDelete.push(i);
+        }
+    }
+    
+    if (rowsToDelete.length > 0) {
+        const sheetRes = await sheets.spreadsheets.get({ spreadsheetId });
+        const sheetId = sheetRes.data.sheets[0].properties.sheetId;
+        const deleteRequests = [];
+        
+        // Delete bottom-up
+        for (let i = rowsToDelete.length - 1; i >= 0; i--) {
+            deleteRequests.push({
+                deleteDimension: {
+                    range: {
+                        sheetId: sheetId,
+                        dimension: "ROWS",
+                        startIndex: rowsToDelete[i],
+                        endIndex: rowsToDelete[i] + 1
+                    }
+                }
+            });
+        }
+        console.log(`Deleting ${deleteRequests.length} old stores...`);
+        await sheets.spreadsheets.batchUpdate({
+            spreadsheetId,
+            requestBody: { requests: deleteRequests }
+        });
+    }
 
     const toInsert = [];
     for (const store of newStores) {
