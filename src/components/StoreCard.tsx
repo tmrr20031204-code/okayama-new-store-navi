@@ -139,32 +139,30 @@ export default function StoreCard({ store }: { store: Store }) {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3 style={{ marginBottom: '1rem', fontSize: '1.125rem', fontWeight: 'bold' }}>訪問記録の入力</h3>
-            <form onSubmit={handleModalSubmit}>
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>当社訪問者氏名 <span style={{color: '#e11d48', fontSize: '0.75rem'}}>*必須</span></label>
-                <input required type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.visitorName} onChange={e => setFormData({...formData, visitorName: e.target.value})} />
-              </div>
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>訪問先担当者氏名</label>
-                <input type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} />
-              </div>
-              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>訪問店舗の連絡先</label>
-                <input type="text" className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc' }} value={formData.contactInfo} onChange={e => setFormData({...formData, contactInfo: e.target.value})} />
-              </div>
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>備考</label>
-                <textarea className="form-input" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc', minHeight: '60px' }} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button type="button" className="btn" style={{ flex: 1, backgroundColor: '#eee', color: '#333', padding: '0.6rem' }} onClick={() => setShowModal(false)}>キャンセル</button>
-                <button type="submit" className="btn" style={{ flex: 1, backgroundColor: '#10b981', color: 'white', padding: '0.6rem' }}>登録して訪問済みにする</button>
-              </div>
-            </form>
-          </div>
+        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #cbd5e1' }}>
+          <h3 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: 'bold', color: '#0f172a' }}>訪問記録の入力</h3>
+          <form onSubmit={handleModalSubmit}>
+            <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.25rem', color: '#334155' }}>当社訪問者氏名 <span style={{color: '#e11d48', fontSize: '0.7rem'}}>*必須</span></label>
+              <input required type="text" className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '16px' }} value={formData.visitorName} onChange={e => setFormData({...formData, visitorName: e.target.value})} />
+            </div>
+            <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.25rem', color: '#334155' }}>訪問先担当者氏名</label>
+              <input type="text" className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '16px' }} value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} />
+            </div>
+            <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.25rem', color: '#334155' }}>訪問店舗の連絡先</label>
+              <input type="text" className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '16px' }} value={formData.contactInfo} onChange={e => setFormData({...formData, contactInfo: e.target.value})} />
+            </div>
+            <div className="form-group" style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.25rem', color: '#334155' }}>備考</label>
+              <textarea className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', minHeight: '60px', fontSize: '16px' }} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button type="button" className="btn" style={{ flex: 1, backgroundColor: '#f1f5f9', color: '#475569', padding: '0.6rem', border: '1px solid #cbd5e1' }} onClick={() => setShowModal(false)}>キャンセル</button>
+              <button type="submit" className="btn" style={{ flex: 1, backgroundColor: '#10b981', color: 'white', padding: '0.6rem' }}>登録する</button>
+            </div>
+          </form>
         </div>
       )}
     </div>
